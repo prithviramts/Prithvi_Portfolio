@@ -68,25 +68,94 @@
 
   /* -----------------------------------------------------------
      Scroll reveal
+     (exposed as observeReveal so content added later — e.g. Medium
+     posts fetched after page load — can fade in the same way)
   ----------------------------------------------------------- */
-  const revealEls = document.querySelectorAll('.reveal');
+  const supportsObserver = 'IntersectionObserver' in window;
 
-  if ('IntersectionObserver' in window && revealEls.length) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
+  const revealObserver = supportsObserver
+    ? new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+      )
+    : null;
+
+  const observeReveal = (el) => {
+    if (revealObserver) {
+      revealObserver.observe(el);
+    } else {
+      // Fallback: no IntersectionObserver support — just show everything
+      el.classList.add('is-visible');
+    }
+  };
+
+  document.querySelectorAll('.reveal').forEach(observeReveal);
+
+  /* -----------------------------------------------------------
+     Blog — latest posts, pulled live from Medium's RSS feed
+     Update your Medium posts and they'll show up here automatically
+     next time this page loads — nothing to edit by hand.
+  ----------------------------------------------------------- */
+  const MEDIUM_USERNAME = 'prithviram19';
+  const BLOG_POST_LIMIT = 5;
+
+  const blogList = document.getElementById('blogList');
+  const blogStatus = document.getElementById('blogStatus');
+
+  if (blogList) {
+    const rssUrl = `https://medium.com/feed/@${MEDIUM_USERNAME}`;
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+    fetch(apiUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (data.status !== 'ok' || !Array.isArray(data.items) || !data.items.length) {
+          throw new Error('No posts returned');
+        }
+
+        if (blogStatus) blogStatus.remove();
+
+        data.items.slice(0, BLOG_POST_LIMIT).forEach((item) => {
+          const row = document.createElement('div');
+          row.className = 'blog__row reveal';
+
+          const link = document.createElement('a');
+          link.href = item.link;
+          link.target = '_blank';
+          link.rel = 'noopener';
+
+          const titleEl = document.createElement('span');
+          titleEl.className = 'blog__title';
+          titleEl.textContent = item.title;
+
+          const metaEl = document.createElement('span');
+          metaEl.className = 'blog__meta';
+          const pubDate = new Date(item.pubDate);
+          metaEl.textContent = Number.isNaN(pubDate.getTime())
+            ? ''
+            : pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+          link.append(titleEl, metaEl);
+          row.appendChild(link);
+          blogList.appendChild(row);
+
+          observeReveal(row);
         });
-      },
-      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    revealEls.forEach((el) => observer.observe(el));
-  } else {
-    // Fallback: no IntersectionObserver support — just show everything
-    revealEls.forEach((el) => el.classList.add('is-visible'));
+      })
+      .catch(() => {
+        if (blogStatus) {
+          blogStatus.textContent = "Couldn't load recent posts right now — read them directly on Medium.";
+        }
+      });
   }
 })();

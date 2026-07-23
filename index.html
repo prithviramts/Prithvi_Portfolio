@@ -7,7 +7,7 @@
   <meta name="description" content="Portfolio of Prithvi Ram T S — IT Specialist in Cloud Operations, working across AWS, Kafka, Elasticsearch and DevOps, with a background in enterprise software engineering.">
 
   <!-- Browser Icons (Favicon) -->
-  <link rel="icon" type="image/svg+xml" href="Resources/Prithvi_Logo.png">
+  <link rel="icon" type="image/svg+xml" href="\Resources\Prithvi_Logo.png">
 
   <!-- Open Graph / LinkedIn / Social Media Meta Tags -->
   <meta property="og:type" content="website">
@@ -33,6 +33,7 @@
     <ul class="nav__links">
       <li><a href="#about">About</a></li>
       <li><a href="#projects">Projects</a></li>
+      <li><a href="#blog">Blog</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
 
@@ -51,6 +52,7 @@
   <ul>
     <li><a href="#about">About</a></li>
     <li><a href="#projects">Projects</a></li>
+    <li><a href="#blog">Blog</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="mobile-menu__status">
@@ -79,7 +81,14 @@
   <section id="about" class="section about">
     <div class="section__inner about__grid">
       <div class="about__media reveal">
-        <img src="Resources/Prithvi_Pic.jpg" width="220" height="220" alt="Prithvi Ram T S" class="about__image">
+        <div class="about__photo">
+          <img src="\Resources\Prithvi_About.jpg" width="963" height="1280" alt="Prithvi Ram T S" class="about__image" loading="lazy">
+          <div class="about__photo-texture" aria-hidden="true"></div>
+          <div class="about__photo-caption">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Prithvi Ram T S — Dubai</span>
+          </div>
+        </div>
       </div>
       <div class="about__content">
         <p class="eyebrow reveal">About</p>
@@ -180,6 +189,24 @@
           <span class="card__link">Dive In <span aria-hidden="true">↗</span></span>
         </a>
 
+      </div>
+    </div>
+  </section>
+
+  <section id="blog" class="section blog">
+    <div class="section__inner">
+      <div class="blog__head">
+        <div>
+          <p class="eyebrow reveal">Field notes</p>
+          <h2 class="section__title reveal">Blog</h2>
+        </div>
+        <a class="link-arrow reveal" href="https://medium.com/@prithviram19" target="_blank" rel="noopener">
+          Read all on Medium <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+      <div class="blog__list" id="blogList">
+        <p class="blog__status reveal" id="blogStatus">Loading latest posts…</p>
       </div>
     </div>
   </section>
